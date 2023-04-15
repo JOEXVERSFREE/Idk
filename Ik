@@ -1,3 +1,1 @@
-return {
-"A8ED82E4-8E28-43C8-9E5F-9ABED29AC4FB",
-}
+
