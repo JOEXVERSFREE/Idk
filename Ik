@@ -1,1 +1,57 @@
+local player = game.Players.LocalPlayer
+local character = game:GetService("Workspace").Ignore.FPSArms
 
+local function updateDistanceLabel(v, TextLabel)
+    if not character or not character.HumanoidRootPart then
+        return
+    end
+    local distance = (v.Position - character.HumanoidRootPart.Position).Magnitude
+    TextLabel.Text = "[" .. math.floor(distance) .. "Studs] Backpack"
+end
+
+player.CharacterAdded:Connect(function(newCharacter)
+    character = newCharacter
+end)
+
+local function onDescendantAdded(descendant)
+    if descendant:IsA("UnionOperation") and descendant.BrickColor == BrickColor.new("Mid gray") and descendant.Material == Enum.Material.Fabric then
+        local BillboardGui = Instance.new("BillboardGui")
+        local TextLabel = Instance.new("TextLabel")
+
+        BillboardGui.Parent = descendant
+        BillboardGui.AlwaysOnTop = true
+        BillboardGui.LightInfluence = 1
+        BillboardGui.Size = UDim2.new(0, 50, 0, 50)
+        BillboardGui.StudsOffset = Vector3.new(0, 2, 0)
+        BillboardGui.MaxDistance = 999
+
+        TextLabel.Parent = BillboardGui
+        TextLabel.BackgroundColor3 = Color3.new(1, 1, 1)
+        TextLabel.BackgroundTransparency = 1
+        TextLabel.Size = UDim2.new(0, 50, 0, 50)
+        TextLabel.FontSize = 5
+        TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+        TextLabel.TextStrokeColor3 = Color3.fromRGB(94, 94, 94)
+        TextLabel.Font = Enum.Font.SourceSansSemibold
+        TextLabel.TextStrokeTransparency = 1
+        TextLabel.TextScaled = false
+
+        updateDistanceLabel(descendant, TextLabel)
+
+        game:GetService("RunService").Heartbeat:Connect(function()
+            updateDistanceLabel(descendant, TextLabel)
+        end)
+    end
+end
+
+for i, descendant in pairs(game.Workspace:GetDescendants()) do
+    if descendant:IsA("UnionOperation") and descendant.BrickColor == BrickColor.new("Mid gray") and descendant.Material == Enum.Material.Fabric then
+        onDescendantAdded(descendant)
+    end
+end
+
+game.Workspace.DescendantAdded:Connect(function(descendant)
+    if descendant:IsA("UnionOperation") and descendant.BrickColor == BrickColor.new("Mid gray") and descendant.Material == Enum.Material.Fabric then
+        onDescendantAdded(descendant)
+    end
+end)
